@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+
 import Button from "../Button";
 
 interface ModalProps {
@@ -14,7 +15,7 @@ interface ModalProps {
   actionLabel: string;
   disabled?: boolean;
   secondaryAction?: () => void;
-  secondaryLabel?: string;
+  secondaryActionLabel?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -23,11 +24,11 @@ const Modal: React.FC<ModalProps> = ({
   onSubmit,
   title,
   body,
-  footer,
   actionLabel,
+  footer,
   disabled,
   secondaryAction,
-  secondaryLabel,
+  secondaryActionLabel,
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -39,18 +40,20 @@ const Modal: React.FC<ModalProps> = ({
     if (disabled) {
       return;
     }
+
     setShowModal(false);
     setTimeout(() => {
       onClose();
     }, 300);
-  }, [disabled, onClose]);
+  }, [onClose, disabled]);
 
   const handleSubmit = useCallback(() => {
     if (disabled) {
       return;
     }
+
     onSubmit();
-  }, [disabled, onSubmit]);
+  }, [onSubmit, disabled]);
 
   const handleSecondaryAction = useCallback(() => {
     if (disabled || !secondaryAction) {
@@ -58,7 +61,7 @@ const Modal: React.FC<ModalProps> = ({
     }
 
     secondaryAction();
-  }, [disabled, secondaryAction]);
+  }, [secondaryAction, disabled]);
 
   if (!isOpen) {
     return null;
@@ -72,7 +75,7 @@ const Modal: React.FC<ModalProps> = ({
           items-center 
           flex 
           overflow-x-hidden 
-          overflow-y-auto 
+          overflow-y-hidden 
           fixed 
           inset-0 
           z-50 
@@ -87,12 +90,12 @@ const Modal: React.FC<ModalProps> = ({
           w-full
           md:w-4/6
           lg:w-3/6
-          xl:w-2/5
+          xl:w-[36%]
           my-6
           mx-auto 
           h-full 
-          lg:h-auto
           md:h-auto
+          lg:h-[670px]
           "
         >
           {/*content*/}
@@ -109,7 +112,7 @@ const Modal: React.FC<ModalProps> = ({
               className="
               translate
               h-full
-              lg:h-auto
+              lg:h-[670px]
               md:h-auto
               border-0 
               rounded-lg 
@@ -151,33 +154,35 @@ const Modal: React.FC<ModalProps> = ({
                 <div className="text-lg font-semibold">{title}</div>
               </div>
               {/*body*/}
-              <div className="relative p-6 flex-auto">{body}</div>
-              {/*footer*/}
-              <div className="flex flex-col gap-2 p-6">
-                <div
-                  className="
+              <div className="h-full overflow-y-auto">
+                <div className="relative p-6 flex-auto">{body}</div>
+                {/*footer*/}
+                <div className=" flex flex-col gap-2 p-6">
+                  <div
+                    className="
                     flex 
                     flex-row 
                     items-center 
                     gap-4 
                     w-full
                   "
-                >
-                  {secondaryAction && secondaryActionLabel && (
+                  >
+                    {secondaryAction && secondaryActionLabel && (
+                      <Button
+                        disabled={disabled}
+                        label={secondaryActionLabel}
+                        onClick={handleSecondaryAction}
+                        outline
+                      />
+                    )}
                     <Button
                       disabled={disabled}
-                      label={secondaryActionLabel}
-                      onClick={handleSecondaryAction}
-                      outline
+                      label={actionLabel}
+                      onClick={handleSubmit}
                     />
-                  )}
-                  <Button
-                    disabled={disabled}
-                    label={actionLabel}
-                    onClick={handleSubmit}
-                  />
+                  </div>
+                  {footer}
                 </div>
-                {footer}
               </div>
             </div>
           </div>
